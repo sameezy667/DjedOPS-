@@ -31,7 +31,6 @@ export function HeroSection({
   baseReserves,
   oraclePrice,
   systemStatus,
-  isSimulated = false,
   contractAddress,
   onLaunchSimulation,
   onInspectProtocol,
