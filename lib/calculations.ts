@@ -82,3 +82,47 @@ export function formatPrice(price: number): string {
 export function formatWalletBalance(balance: number): string {
   return `WAL: ${balance.toFixed(2)} ERG`;
 }
+
+/**
+ * Calculate Protocol Confidence Index (PCI)
+ * PCI is a 0-100 score representing overall protocol health
+ * 
+ * Formula:
+ * 1. Start with base score of 100
+ * 2. DSI Penalty: If DSI < 400%, subtract (400 - DSI) / 4
+ * 3. Volatility Penalty: Subtract volatility * 2
+ * 
+ * @param dsi - Current DSI (Debt-to-Stability Index) reserve ratio percentage
+ * @param volatility - Price volatility as a percentage (e.g., 5 for 5% volatility)
+ * @returns PCI score clamped between 0 and 100
+ */
+export function calculatePCI(dsi: number, volatility: number): number {
+  // Start with perfect score
+  let score = 100;
+  
+  // DSI Penalty: penalize if below 400% threshold
+  if (dsi < 400) {
+    const dsiPenalty = (400 - dsi) / 4;
+    score -= dsiPenalty;
+  }
+  // No penalty if DSI > 800% (healthy range)
+  
+  // Volatility Penalty: higher volatility reduces confidence
+  const volatilityPenalty = volatility * 2;
+  score -= volatilityPenalty;
+  
+  // Clamp score between 0 and 100
+  return Math.max(0, Math.min(100, score));
+}
+
+/**
+ * Get confidence level label based on PCI score
+ * 
+ * @param pci - Protocol Confidence Index (0-100)
+ * @returns Confidence level: 'EXCELLENT' | 'CAUTION' | 'CRITICAL'
+ */
+export function getConfidenceLevel(pci: number): 'EXCELLENT' | 'CAUTION' | 'CRITICAL' {
+  if (pci >= 80) return 'EXCELLENT';
+  if (pci >= 50) return 'CAUTION';
+  return 'CRITICAL';
+}
