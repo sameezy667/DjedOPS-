@@ -46,7 +46,7 @@ export function HeroSection({
   };
 
   return (
-    <section className="relative w-full min-h-screen py-2 md:py-12 overflow-hidden">
+    <section className="relative w-full py-2 md:py-12 overflow-hidden">
       {/* Horizontal green line separator */}
       <div className="absolute top-0 left-0 right-0 h-px bg-[#39FF14]/30"></div>
       

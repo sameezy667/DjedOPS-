@@ -444,7 +444,7 @@ export default function Home() {
         />
 
         {/* Historical Timeline Chart */}
-        <div className="mt-24 max-w-7xl mx-auto">
+        <div className="mt-8 max-w-7xl mx-auto">
           <ReserveHistoryChart />
         </div>
 
