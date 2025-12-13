@@ -30,7 +30,6 @@ export function RootCauseAnalyzer({
   
   // Mock previous values (1 hour ago) - in production, fetch from API or state history
   const previousErgPrice = ergPrice * 1.08; // Simulate 8% higher price 1h ago
-  const previousDSI = currentDSI * 1.05; // Simulate 5% higher DSI 1h ago
   
   // Calculate price change percentage
   const priceChangePercent = ((ergPrice - previousErgPrice) / previousErgPrice) * 100;
