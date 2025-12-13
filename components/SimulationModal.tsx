@@ -54,33 +54,32 @@ export function SimulationModal({
   });
   
   // ====================================================================
-  // 2. STATE MANAGEMENT
+  // 2. STATE MANAGEMENT (PRICE ONLY)
   // ====================================================================
   const [simulatedPrice, setSimulatedPrice] = useState(basePrice);
-  const [simulatedRatio, setSimulatedRatio] = useState(baseRatio);
   const [frozenPrice, setFrozenPrice] = useState<number | null>(null);
-  
-  const simulatedStatus = determineSystemStatus(simulatedRatio);
+  const [forcedRatio, setForcedRatio] = useState<number | null>(null); // For bank_run scenario
   
   // ====================================================================
-  // 3. CALCULATION EFFECT (SIMPLIFIED LINEAR APPROXIMATION)
+  // 3. DERIVED CALCULATION (NO STATE, NO EFFECT - BULLETPROOF)
   // ====================================================================
-  // If price doubles, ratio doubles (linear approximation for UI)
-  useEffect(() => {
-    const ratioChange = simulatedPrice / basePrice;
-    const newRatio = baseRatio * ratioChange;
-    
-    console.log('🔄 Simulating:', {
-      basePrice,
-      baseRatio,
-      simulatedPrice,
-      ratioChange,
-      newRatio,
-      formula: `${baseRatio}% × (${simulatedPrice} / ${basePrice}) = ${newRatio}%`
-    });
-    
-    setSimulatedRatio(newRatio);
-  }, [simulatedPrice, basePrice, baseRatio]);
+  // Calculate ratio on-the-fly during render (never gets stuck at 0)
+  const priceMultiplier = simulatedPrice / basePrice;
+  const displayedRatio = forcedRatio !== null ? forcedRatio : baseRatio * priceMultiplier;
+  const simulatedStatus = determineSystemStatus(displayedRatio);
+  
+  // Debug log (only logs when values change)
+  console.log('🔄 Derived Calculation:', {
+    basePrice,
+    baseRatio,
+    simulatedPrice,
+    priceMultiplier,
+    displayedRatio,
+    forcedRatio,
+    formula: forcedRatio !== null 
+      ? `Forced: ${forcedRatio}%` 
+      : `${baseRatio}% × (${simulatedPrice} / ${basePrice}) = ${displayedRatio}%`
+  });
 
   // ====================================================================
   // 4. FORCE UPDATE ON OPEN (RESET TO DEFAULTS)
@@ -88,7 +87,7 @@ export function SimulationModal({
   useEffect(() => {
     if (isOpen) {
       setSimulatedPrice(basePrice);
-      setSimulatedRatio(baseRatio);
+      setForcedRatio(null); // Clear any forced ratio
       console.log('🚀 Modal Opened - Force Reset:', {
         basePrice,
         baseRatio,
@@ -112,8 +111,9 @@ export function SimulationModal({
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPrice = parseFloat(e.target.value);
     setSimulatedPrice(newPrice);
+    setForcedRatio(null); // Clear forced ratio when user adjusts slider
     
-    // Calculate new ratio using the bulletproof formula
+    // Calculate new ratio using the bulletproof formula (derived)
     const ratioChange = newPrice / basePrice;
     const newRatio = baseRatio * ratioChange;
     const newStatus = determineSystemStatus(newRatio);
@@ -132,22 +132,22 @@ export function SimulationModal({
       // Instant 50% price drop
       const crashPrice = basePrice * 0.5;
       setSimulatedPrice(crashPrice);
+      setForcedRatio(null); // Let it calculate naturally
       const newRatio = baseRatio * 0.5; // 50% price drop = 50% ratio drop
-      setSimulatedRatio(newRatio);
       onSimulatedPriceChange(crashPrice, newRatio, determineSystemStatus(newRatio));
     } else if (scenario === 'oracle_freeze') {
       // Lock price at current value
       setFrozenPrice(simulatedPrice);
     } else if (scenario === 'bank_run') {
       // Force ratio below 400%
-      const forcedRatio = 399;
-      setSimulatedRatio(forcedRatio);
-      onSimulatedPriceChange(simulatedPrice, forcedRatio, 'CRITICAL');
+      const bankRunRatio = 399;
+      setForcedRatio(bankRunRatio);
+      onSimulatedPriceChange(simulatedPrice, bankRunRatio, 'CRITICAL');
     } else if (scenario === 'none') {
       // Reset to live state
       setFrozenPrice(null);
+      setForcedRatio(null);
       setSimulatedPrice(basePrice);
-      setSimulatedRatio(baseRatio);
       onSimulatedPriceChange(basePrice, baseRatio, determineSystemStatus(baseRatio));
     }
   };
@@ -250,12 +250,15 @@ export function SimulationModal({
               <p className={`text-2xl sm:text-3xl md:text-4xl font-mono font-bold break-words ${
                 simulatedStatus === 'CRITICAL' ? 'text-alert' : 'text-terminal'
               }`}>
-                {simulatedRatio.toFixed(2)}%
+                {displayedRatio.toFixed(2)}%
               </p>
               
               {/* Debug info */}
               <p className="text-xs text-gray-500 mt-2 font-mono">
-                Price ${simulatedPrice.toFixed(2)} / Base ${basePrice.toFixed(2)} × Ratio {baseRatio.toFixed(2)}%
+                {forcedRatio !== null 
+                  ? `Forced: ${forcedRatio}% (Bank Run)`
+                  : `Price ${simulatedPrice.toFixed(2)} / Base ${basePrice.toFixed(2)} × Ratio ${baseRatio.toFixed(2)}%`
+                }
               </p>
               
               {/* Red alert indicator when ratio < 400% */}
