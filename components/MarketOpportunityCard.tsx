@@ -4,10 +4,6 @@ import { motion } from 'framer-motion';
 import { useDexPrice } from '@/lib/hooks/useDexPrice';
 import { Zap, ExternalLink } from 'lucide-react';
 
-export interface MarketOpportunityCardProps {
-  // No props needed - protocol price is hardcoded
-}
-
 /**
  * Generate Spectrum Finance URL based on arbitrage signal
  * 
@@ -38,7 +34,7 @@ function generateSpectrumUrl(signal: string): string | null {
  * 
  * Now includes one-click trade execution via Spectrum Finance.
  */
-export function MarketOpportunityCard({}: MarketOpportunityCardProps) {
+export function MarketOpportunityCard() {
   const { dexPrice, spread, spreadPercent, signal, isLoading, liquidity, source } = useDexPrice();
 
   // Signal styling
