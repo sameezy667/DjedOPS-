@@ -92,8 +92,8 @@ export default function Home() {
   // Fetch protocol data using useDjedData hook
   const { data: rawDjedData, error, isLoading, mutate } = useDjedData(isDemoMode);
   
-  // Apply replay mode data if TimeTravel is active
-  const djedData = useReplayData(rawDjedData);
+  // Apply replay mode data if TimeTravel is active (convert undefined to null)
+  const djedData = useReplayData(rawDjedData ?? null);
 
   // Fetch DEX price for DSI calculation
   const { dexPrice, isError: dexError } = useDexPrice();
