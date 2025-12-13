@@ -499,7 +499,14 @@ export default function Home() {
             <h2 className="text-3xl font-display font-bold text-[#E5E5E5] mb-6 uppercase tracking-tight">
               Protocol Confidence
             </h2>
-            <ConfidenceGauge dsi={displayRatio} volatility={Math.abs(spreadPercent) || 3.5} />
+            <ConfidenceGauge 
+              dsi={displayRatio} 
+              volatility={
+                djedData && dexPrice && !dexError
+                  ? Math.abs(((dexPrice - djedData.oraclePrice) / djedData.oraclePrice) * 100)
+                  : 3.5
+              } 
+            />
           </div>
 
           {/* Root Cause Analyzer */}
