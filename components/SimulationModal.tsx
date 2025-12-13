@@ -46,13 +46,26 @@ export function SimulationModal({
   // Reset slider to current price when modal opens
   useEffect(() => {
     if (isOpen) {
+      console.log('🔧 SimulationModal Initialize:', {
+        currentPrice,
+        baseReserves,
+        sigUsdCirculation,
+        isOpen
+      });
       setSliderValue(currentPrice);
       // Calculate initial ratio on open
       if (sigUsdCirculation > 0) {
         const ratio = calculateReserveRatio(baseReserves, currentPrice, sigUsdCirculation);
         const status = determineSystemStatus(ratio);
+        console.log('🔧 Initial Ratio Calculated:', {
+          ratio,
+          status,
+          formula: `(${baseReserves} * ${currentPrice}) / ${sigUsdCirculation} * 100`
+        });
         setSimulatedRatio(ratio);
         setSimulatedStatus(status);
+      } else {
+        console.error('❌ sigUsdCirculation is zero or negative:', sigUsdCirculation);
       }
     }
   }, [isOpen, currentPrice, baseReserves, sigUsdCirculation]);
