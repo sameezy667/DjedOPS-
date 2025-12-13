@@ -75,22 +75,30 @@ export class DemoService {
         throw new Error('Invalid JSON format in mock-data.json');
       }
       
+      // Type guard to check if data has expected structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid mock data format: expected object');
+      }
+      
+      // Cast to any for validation since we're checking the structure
+      const mockData = data as Record<string, unknown>;
+      
       // Validate the structure with detailed checking
       const warnings: string[] = [];
       
-      if (typeof data.oraclePrice !== 'number' || data.oraclePrice <= 0) {
+      if (typeof mockData.oraclePrice !== 'number' || mockData.oraclePrice <= 0) {
         warnings.push('Invalid or missing oraclePrice');
       }
-      if (typeof data.baseReserves !== 'number' || data.baseReserves <= 0) {
+      if (typeof mockData.baseReserves !== 'number' || mockData.baseReserves <= 0) {
         warnings.push('Invalid or missing baseReserves');
       }
-      if (typeof data.sigUsdCirculation !== 'number' || data.sigUsdCirculation < 0) {
+      if (typeof mockData.sigUsdCirculation !== 'number' || mockData.sigUsdCirculation < 0) {
         warnings.push('Invalid or missing sigUsdCirculation');
       }
-      if (typeof data.shenCirculation !== 'number' || data.shenCirculation < 0) {
+      if (typeof mockData.shenCirculation !== 'number' || mockData.shenCirculation < 0) {
         warnings.push('Invalid or missing shenCirculation');
       }
-      if (!Array.isArray(data.transactions)) {
+      if (!Array.isArray(mockData.transactions)) {
         warnings.push('Missing or invalid transactions array');
       }
       
@@ -99,7 +107,7 @@ export class DemoService {
         console.warn('Demo data validation warnings:', warnings);
         
         // If any critical field is invalid, use fallback
-        if (!data.oraclePrice || !data.baseReserves || data.sigUsdCirculation === undefined) {
+        if (!mockData.oraclePrice || !mockData.baseReserves || mockData.sigUsdCirculation === undefined) {
           throw new Error(`Incomplete demo data: ${warnings.join(', ')}`);
         }
         
@@ -109,11 +117,11 @@ export class DemoService {
       
       // Ensure all required fields exist with defaults
       const validatedData: MockData = {
-        oraclePrice: data.oraclePrice || 1.45,
-        baseReserves: data.baseReserves || 12500000,
-        sigUsdCirculation: data.sigUsdCirculation || 3200000,
-        shenCirculation: data.shenCirculation || 850000,
-        transactions: Array.isArray(data.transactions) ? data.transactions : [],
+        oraclePrice: mockData.oraclePrice as number || 1.45,
+        baseReserves: mockData.baseReserves as number || 12500000,
+        sigUsdCirculation: mockData.sigUsdCirculation as number || 3200000,
+        shenCirculation: mockData.shenCirculation as number || 850000,
+        transactions: Array.isArray(mockData.transactions) ? mockData.transactions : [],
       };
       
       this.mockData = validatedData;
