@@ -39,9 +39,13 @@ export function SimulationModal({
 }: SimulationModalProps) {
   const simulationScenario = useAppStore((state) => state.simulationScenario);
   const [sliderValue, setSliderValue] = useState(currentPrice);
-  const [simulatedRatio, setSimulatedRatio] = useState(0);
-  const [simulatedStatus, setSimulatedStatus] = useState<'NORMAL' | 'CRITICAL'>('NORMAL');
   const [frozenPrice, setFrozenPrice] = useState<number | null>(null);
+  
+  // Calculate ratio directly from current slider value - no state needed
+  const simulatedRatio = sigUsdCirculation > 0 
+    ? calculateReserveRatio(baseReserves, sliderValue, sigUsdCirculation)
+    : 0;
+  const simulatedStatus = determineSystemStatus(simulatedRatio);
 
   // Reset slider to current price when modal opens
   useEffect(() => {
@@ -50,25 +54,12 @@ export function SimulationModal({
         currentPrice,
         baseReserves,
         sigUsdCirculation,
-        isOpen
+        sliderValue,
+        calculatedRatio: simulatedRatio
       });
       setSliderValue(currentPrice);
-      // Calculate initial ratio on open
-      if (sigUsdCirculation > 0) {
-        const ratio = calculateReserveRatio(baseReserves, currentPrice, sigUsdCirculation);
-        const status = determineSystemStatus(ratio);
-        console.log('🔧 Initial Ratio Calculated:', {
-          ratio,
-          status,
-          formula: `(${baseReserves} * ${currentPrice}) / ${sigUsdCirculation} * 100`
-        });
-        setSimulatedRatio(ratio);
-        setSimulatedStatus(status);
-      } else {
-        console.error('❌ sigUsdCirculation is zero or negative:', sigUsdCirculation);
-      }
     }
-  }, [isOpen, currentPrice, baseReserves, sigUsdCirculation]);
+  }, [isOpen, currentPrice]);
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -86,24 +77,19 @@ export function SimulationModal({
     const newPrice = parseFloat(e.target.value);
     setSliderValue(newPrice);
     
-    // Recalculate ratio with new price
-    if (sigUsdCirculation > 0) {
-      const newRatio = (baseReserves * newPrice) / sigUsdCirculation * 100;
-      const newStatus = determineSystemStatus(newRatio);
-      
-      console.log('🔍 Simulation Math Check:', {
-        baseReserves,
-        price: newPrice,
-        sigUsdSupply: sigUsdCirculation,
-        formula: `(${baseReserves} * ${newPrice}) / ${sigUsdCirculation} * 100`,
-        calculatedRatio: newRatio,
-        status: newStatus
-      });
-      
-      setSimulatedRatio(newRatio);
-      setSimulatedStatus(newStatus);
-      onSimulatedPriceChange(newPrice, newRatio, newStatus);
-    }
+    // Ratio is automatically calculated from sliderValue in the component
+    // Just notify parent of the change
+    const newRatio = (baseReserves * newPrice) / sigUsdCirculation * 100;
+    const newStatus = determineSystemStatus(newRatio);
+    
+    console.log('🔍 Slider Change:', {
+      newPrice,
+      newRatio,
+      newStatus,
+      formula: `(${baseReserves} * ${newPrice}) / ${sigUsdCirculation} * 100`
+    });
+    
+    onSimulatedPriceChange(newPrice, newRatio, newStatus);
   };
 
   const handleScenarioActivate = (scenario: SimulationScenario) => {
@@ -113,33 +99,23 @@ export function SimulationModal({
       // Instant 50% price drop
       const crashPrice = currentPrice * 0.5;
       setSliderValue(crashPrice);
-      if (sigUsdCirculation > 0) {
-        const newRatio = (baseReserves * crashPrice) / sigUsdCirculation * 100;
-        const newStatus = determineSystemStatus(newRatio);
-        setSimulatedRatio(newRatio);
-        setSimulatedStatus(newStatus);
-        onSimulatedPriceChange(crashPrice, newRatio, newStatus);
-      }
+      const newRatio = (baseReserves * crashPrice) / sigUsdCirculation * 100;
+      const newStatus = determineSystemStatus(newRatio);
+      onSimulatedPriceChange(crashPrice, newRatio, newStatus);
     } else if (scenario === 'oracle_freeze') {
       // Lock price at current value
       setFrozenPrice(sliderValue);
     } else if (scenario === 'bank_run') {
-      // Force ratio below 400% by reducing effective reserves
+      // Force ratio below 400%
       const forcedRatio = 399;
-      setSimulatedRatio(forcedRatio);
-      setSimulatedStatus('CRITICAL');
       onSimulatedPriceChange(sliderValue, forcedRatio, 'CRITICAL');
     } else if (scenario === 'none') {
       // Reset to live state
       setFrozenPrice(null);
       setSliderValue(currentPrice);
-      if (sigUsdCirculation > 0) {
-        const ratio = calculateReserveRatio(baseReserves, currentPrice, sigUsdCirculation);
-        const status = determineSystemStatus(ratio);
-        setSimulatedRatio(ratio);
-        setSimulatedStatus(status);
-        onSimulatedPriceChange(currentPrice, ratio, status);
-      }
+      const ratio = calculateReserveRatio(baseReserves, currentPrice, sigUsdCirculation);
+      const status = determineSystemStatus(ratio);
+      onSimulatedPriceChange(currentPrice, ratio, status);
     }
   };
 
