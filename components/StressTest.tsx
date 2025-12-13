@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useDjedData } from '@/lib/hooks/useDjedData';
 import Lottie from 'lottie-react';
 
 export default function StressTest() {
-  const { data } = useDjedData();
   const [sliderPercent, setSliderPercent] = useState(0);
   const [projectedRatio, setProjectedRatio] = useState<number | null>(null);
 
