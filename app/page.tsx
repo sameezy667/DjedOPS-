@@ -20,6 +20,9 @@ import StressTest from '../components/StressTest';
 import ProtocolInspector from '../components/ProtocolInspector';
 import OracleConsensus from '../components/OracleConsensus';
 import { SentinelTriggerBanner, DashboardBorderFlash } from '../components/SentinelTrigger';
+import { RootCauseAnalyzer } from '../components/RootCauseAnalyzer';
+import { ConfidenceGauge } from '../components/ConfidenceGauge';
+import { TimeTravel } from '../components/TimeTravel';
 import { useAppStore } from '@/lib/store';
 import { useDjedData } from '@/lib/hooks/useDjedData';
 import { useTransactionFeed } from '@/lib/hooks/useTransactionFeed';
@@ -485,6 +488,29 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Protocol Confidence & Risk Analysis */}
+        <div className="mt-12 md:mt-16 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          {/* Protocol Confidence Index */}
+          <div>
+            <h2 className="text-3xl font-display font-bold text-[#E5E5E5] mb-6 uppercase tracking-tight">
+              Protocol Confidence
+            </h2>
+            <ConfidenceGauge dsi={displayRatio} volatility={5.2} />
+          </div>
+
+          {/* Root Cause Analyzer */}
+          <div>
+            <h2 className="text-3xl font-display font-bold text-[#E5E5E5] mb-6 uppercase tracking-tight">
+              Risk Analysis
+            </h2>
+            <RootCauseAnalyzer 
+              currentDSI={displayRatio}
+              ergPrice={djedData.oraclePrice}
+              oraclePrice={djedData.oraclePrice}
+            />
+          </div>
+        </div>
+
         {/* Oracle Network Health */}
         <div className="mt-24 max-w-7xl mx-auto">
           <h2 className="text-3xl font-display font-bold text-[#E5E5E5] mb-6 uppercase tracking-tight">
@@ -608,6 +634,9 @@ export default function Home() {
 
       {/* KYA Modal */}
       <KYAModal isOpen={isKYAModalOpen} onClose={() => setIsKYAModalOpen(false)} />
+
+      {/* Time Travel Control Bar */}
+      <TimeTravel />
     </div>
   );
 }

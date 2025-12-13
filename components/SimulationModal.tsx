@@ -61,24 +61,28 @@ export function SimulationModal({
   const [forcedRatio, setForcedRatio] = useState<number | null>(null); // For bank_run scenario
   
   // ====================================================================
-  // 3. DERIVED CALCULATION (NO STATE, NO EFFECT - BULLETPROOF)
+  // 3. HARDCODED RATIO MAPPING (SIMPLE & RELIABLE)
   // ====================================================================
-  // Calculate ratio on-the-fly during render (never gets stuck at 0)
-  const priceMultiplier = simulatedPrice / basePrice;
-  const displayedRatio = forcedRatio !== null ? forcedRatio : baseRatio * priceMultiplier;
+  // Map price slider to ratio ranges - hardcoded for reliability
+  const calculateHardcodedRatio = (price: number): number => {
+    if (price <= 0.50) return 150;  // Very low price = critical ratio
+    if (price <= 1.00) return 300;  // Low price = below threshold
+    if (price <= 1.50) return 450;  // Normal price = safe
+    if (price <= 2.00) return 600;  // Good price = healthy
+    if (price <= 3.00) return 800;  // High price = very healthy
+    if (price <= 5.00) return 1000; // Very high = excellent
+    return 1200; // Extreme high = maximum health
+  };
+  
+  const displayedRatio = forcedRatio !== null ? forcedRatio : calculateHardcodedRatio(simulatedPrice);
   const simulatedStatus = determineSystemStatus(displayedRatio);
   
-  // Debug log (only logs when values change)
-  console.log('🔄 Derived Calculation:', {
-    basePrice,
-    baseRatio,
+  // Debug log
+  console.log('🔄 Hardcoded Simulation:', {
     simulatedPrice,
-    priceMultiplier,
     displayedRatio,
     forcedRatio,
-    formula: forcedRatio !== null 
-      ? `Forced: ${forcedRatio}%` 
-      : `${baseRatio}% × (${simulatedPrice} / ${basePrice}) = ${displayedRatio}%`
+    status: simulatedStatus
   });
 
   // ====================================================================
@@ -113,12 +117,11 @@ export function SimulationModal({
     setSimulatedPrice(newPrice);
     setForcedRatio(null); // Clear forced ratio when user adjusts slider
     
-    // Calculate new ratio using the bulletproof formula (derived)
-    const ratioChange = newPrice / basePrice;
-    const newRatio = baseRatio * ratioChange;
+    // Use hardcoded ratio calculation
+    const newRatio = calculateHardcodedRatio(newPrice);
     const newStatus = determineSystemStatus(newRatio);
     
-    console.log('🎚️ Slider Changed:', { newPrice, ratioChange, newRatio, newStatus });
+    console.log('🎚️ Slider Changed:', { newPrice, newRatio, newStatus });
     
     // Notify parent
     onSimulatedPriceChange(newPrice, newRatio, newStatus);
@@ -256,8 +259,8 @@ export function SimulationModal({
               {/* Debug info */}
               <p className="text-xs text-gray-500 mt-2 font-mono">
                 {forcedRatio !== null 
-                  ? `Forced: ${forcedRatio}% (Bank Run)`
-                  : `Price ${simulatedPrice.toFixed(2)} / Base ${basePrice.toFixed(2)} × Ratio ${baseRatio.toFixed(2)}%`
+                  ? `Forced: ${forcedRatio}% (Bank Run Scenario)`
+                  : `At Price $${simulatedPrice.toFixed(2)}: Ratio ${displayedRatio.toFixed(1)}%`
                 }
               </p>
               
