@@ -34,3 +34,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# mobile app (separate project)
+/mobile
+
+# error logs
+hs_err_pid*.log
+replay_pid*.log
+
+# IDE
+/.vscode
+/.kiro

@@ -1,37 +1,53 @@
-# DjedOps Command Center
+# DjedOps Dashboard
 
-## Project Description
-A real-time stability analytics dashboard for the Djed Protocol on the Ergo Blockchain. It provides deep insights into Reserve Ratios, Whale movements, and Arbitrage opportunities.
+Mission-critical visualization interface for the Djed stablecoin protocol on the Ergo blockchain.
 
-## Features
-- **Live DSI Monitor:** Real-time tracking of the Djed Stability Index.
-- **Whale Watcher:** Live mempool scanning for transactions > 1000 ERG.
-- **Arb Scanner:** One-click detection of DEX price discrepancies.
-- **3D Visualization:** Interactive WebGL representation of protocol health.
+![Financial Brutalism Design](https://img.shields.io/badge/Design-Financial%20Brutalism-39FF14?style=for-the-badge)
+![Next.js 14](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
 
-## Project Maturity
-- [x] Prototype
-- [x] MVP
-- [ ] Alpha
-- [ ] Beta
-- [ ] Production
-- [ ] Audited
+## 🎯 Overview
 
-## Tech Stack
-- **Frontend:** Next.js 14, Tailwind CSS, Framer Motion
-- **Visuals:** React Three Fiber (Three.js)
-- **Data:** Ergo Explorer API
+DjedOps Dashboard provides real-time monitoring and simulation capabilities for the Djed algorithmic stablecoin protocol. The interface displays critical metrics including reserve ratios, price oracles, and transaction feeds with a distinctive **Financial Brutalism** design language.
 
-## Getting Started
-1. Clone the repo
-2. `npm install`
-3. `npm run dev`
+## 🚀 Quick Start
 
-## License
-GPL v3 - See LICENSE.md
+### Installation
 
-## Copyright
-© 2025 The Stable Order
+```bash
+npm install
+```
+
+### Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Demo Mode (Offline/Testing)
+
+For offline demonstrations or judging environments without API access:
+
+```bash
+# Append ?demo=true to the URL
+http://localhost:3000?demo=true
+```
+
+**Demo mode features:**
+- Uses mock data from `public/mock-data.json`
+- Simulates real-time updates
+- Perfect for presentations and testing
+- No external API dependencies
+
+### Testing
+
+Run all tests (41 unit tests):
+
+```bash
+npm test
+```
 
 Run tests in watch mode:
 

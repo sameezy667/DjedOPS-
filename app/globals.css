@@ -1,0 +1,360 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aura Template - Financial Brutalism Design System */
+:root {
+  --void: #000000;
+  --obsidian: #0A0A0A;
+  --terminal: #39FF14;
+  --lime: #39FF14;
+  --alert: #FF2A2A;
+  --text-primary: #E5E5E5;
+  --text-secondary: #888888;
+}
+
+body {
+  color: var(--text-primary);
+  background-color: #000000;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(57, 255, 20, 0.03) 2px, rgba(57, 255, 20, 0.03) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(57, 255, 20, 0.03) 2px, rgba(57, 255, 20, 0.03) 4px),
+    linear-gradient(rgba(57, 255, 20, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.15) 1px, transparent 1px),
+    radial-gradient(circle at 20% 80%, rgba(57, 255, 20, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(57, 255, 20, 0.05) 0%, transparent 50%);
+  background-size: 4px 4px, 4px 4px, 80px 80px, 80px 80px, 100% 100%, 100% 100%;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  font-family: 'JetBrains Mono', 'Inter', monospace;
+  position: relative;
+  overflow-x: hidden;
+  animation: panGrid 120s linear infinite, gridPulse 8s ease-in-out infinite;
+}
+
+/* Grain Texture Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Animated Scanline Effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.5), transparent);
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes panGrid {
+  0% {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  100% {
+    background-position: 40px 40px, 40px 40px, 80px 80px, 80px 80px, 0 0, 0 0;
+  }
+}
+
+@keyframes gridPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Radial gradient for depth */
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+  
+  /* Aura glass card effect */
+  .aura-card {
+    background-color: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Hollow Text Effect (Aura Style) */
+  .text-hollow {
+    -webkit-text-stroke: 2px #E5E5E5;
+    -webkit-text-fill-color: transparent;
+    text-stroke: 2px #E5E5E5;
+    text-fill-color: transparent;
+  }
+  
+  .text-hollow-thick {
+    -webkit-text-stroke: 1px #39FF14;
+    -webkit-text-fill-color: transparent;
+    text-stroke: 1px #39FF14;
+    text-fill-color: transparent;
+  }
+  
+  /* Lime Glow Effect (Aura Primary) */
+  .text-glow-lime {
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.8), 0 0 40px rgba(57, 255, 20, 0.4);
+  }
+  
+  /* Green Glow Effect */
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(57, 255, 20, 0.6);
+  }
+  
+  /* Red Glow Effect */
+  .text-glow-red {
+    text-shadow: 0 0 10px rgba(255, 42, 42, 0.6);
+  }
+  
+  /* Aura Card Hover Effect */
+  .card-hover-lime {
+    transition: border-color 0.3s ease;
+  }
+  
+  .card-hover-lime:hover {
+    border-color: rgba(57, 255, 20, 0.5);
+  }
+  
+  /* Massive Title Text */
+  .text-massive {
+    font-size: clamp(3rem, 12vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+  }
+  
+  /* Horizon Line */
+  .horizon-line {
+    border-bottom: 1px solid rgba(57, 255, 20, 0.3);
+  }
+  
+  /* Corner L-Brackets */
+  .corner-brackets {
+    position: relative;
+  }
+  
+  .corner-brackets::before,
+  .corner-brackets::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #39FF14;
+  }
+  
+  .corner-brackets::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+  }
+  
+  .corner-brackets::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+  }
+}
+
+/* Custom Slider Styling */
+input[type="range"].slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"].slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--terminal);
+  cursor: pointer;
+  border: 2px solid var(--terminal);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.6);
+}
+
+input[type="range"].slider-thumb::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--terminal);
+  cursor: pointer;
+  border: 2px solid var(--terminal);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.6);
+}
+
+input[type="range"].slider-thumb::-webkit-slider-track {
+  background: var(--obsidian);
+  border: 1px solid var(--terminal);
+}
+
+input[type="range"].slider-thumb::-moz-range-track {
+  background: var(--obsidian);
+  border: 1px solid var(--terminal);
+}
+
+/* Touch Optimization */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch target sizes on mobile */
+  button,
+  a,
+  input[type="range"] {
+    min-height: 44px;
+  }
+  
+  /* Improve slider thumb size for touch */
+  input[type="range"].slider-thumb::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+  }
+  
+  input[type="range"].slider-thumb::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Smooth scrolling for touch devices */
+@media (hover: none) {
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Prevent text selection on interactive elements */
+button,
+.slider-thumb {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keyboard Navigation - Visible Focus Indicators */
+*:focus-visible {
+  outline: 2px solid var(--terminal);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--terminal);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(57, 255, 20, 0.2);
+}
+
+/* Skip to main content link for keyboard navigation */
+.skip-to-main {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--terminal);
+  color: var(--void);
+  padding: 0.5rem 1rem;
+  z-index: 100;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ensure proper viewport behavior on mobile */
+@supports (-webkit-touch-callout: none) {
+  /* iOS specific fixes */
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Custom scrollbar for react-window virtualized lists */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(57, 255, 20, 0.3);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(57, 255, 20, 0.5);
+}
+
+/* Firefox scrollbar styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(57, 255, 20, 0.3) transparent;
+}

@@ -1,0 +1,654 @@
+<html lang="en" class="scroll-smooth"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DjedOps | System Stability Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<!-- Added Unbounded for the Brutalist Title -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@300;400;500;700&amp;family=Unbounded:wght@500;700;900&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #050505;
+color: #e5e5e5;
+}
+/* Technical Grid Background - Updated Mask */
+.tech-grid {
+background-size: 40px 40px;
+background-image:
+linear-gradient(to right, rgba(57, 255, 20, 0.05) 1px, transparent 1px),
+linear-gradient(to bottom, rgba(57, 255, 20, 0.05) 1px, transparent 1px);
+/* Radial gradient focusing on center, fading edges */
+mask-image: radial-gradient(circle at 50% 40%, black 20%, transparent 90%);
+}
+.grain-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: 50;
+opacity: 0.05;
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+/* Global Page Scanline */
+.page-scanline {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 2px;
+background: #39FF14;
+box-shadow: 0 0 15px #39FF14;
+animation: scanPage 5s linear infinite;
+opacity: 0.3;
+pointer-events: none;
+z-index: 40;
+}
+@keyframes scanPage {
+0% { top: -10%; opacity: 0; }
+10% { opacity: 0.3; }
+90% { opacity: 0.3; }
+100% { top: 110%; opacity: 0; }
+}
+/* Wireframe Sphere Animation - Updated Rotation and Breathing */
+@keyframes rotate3D {
+0% { transform: rotateY(0deg) rotateX(10deg); }
+100% { transform: rotateY(360deg) rotateX(10deg); }
+}
+@keyframes breathe {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.05); }
+}
+.wireframe-container {
+perspective: 1000px;
+width: 100%;
+height: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.wireframe-sphere {
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background:
+radial-gradient(circle at 30% 30%, rgba(57, 255, 20, 0.05), transparent 60%),
+repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(57, 255, 20, 0.3) 20px),
+repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(57, 255, 20, 0.3) 20px);
+background-size: 100% 100%, 30px 30px, 30px 30px;
+box-shadow: 0 0 40px -20px rgba(57, 255, 20, 0.4), inset 0 0 30px rgba(57, 255, 20, 0.1);
+border: 1px solid rgba(57, 255, 20, 0.4);
+position: relative;
+/* Combined Animations */
+animation: rotate3D 20s linear infinite;
+}
+.sphere-wrapper {
+width: 100%;
+height: 100%;
+animation: breathe 4s ease-in-out infinite;
+}
+/* Scrollbar */
+::-webkit-scrollbar {
+width: 6px;
+background: #050505;
+}
+::-webkit-scrollbar-thumb {
+background: #1a1a1a;
+border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #39FF14;
+}
+.text-glow {
+text-shadow: 0 0 15px rgba(57, 255, 20, 0.6);
+}
+/* Hollow Text Style for OPS */
+.text-hollow {
+-webkit-text-stroke: 2px white;
+color: transparent;
+}
+/* Glitch Effect on Hover */
+.glitch-wrapper {
+position: relative;
+display: inline-block;
+}
+.glitch-wrapper:hover .glitch-text {
+animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+color: #39FF14;
+-webkit-text-stroke: 0px;
+}
+.glitch-wrapper:hover .glitch-text-hollow {
+animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+-webkit-text-stroke: 2px #39FF14;
+}
+@keyframes glitch {
+0% { transform: translate(0); }
+20% { transform: translate(-2px, 2px); }
+40% { transform: translate(-2px, -2px); }
+60% { transform: translate(2px, 2px); }
+80% { transform: translate(2px, -2px); }
+100% { transform: translate(0); }
+}
+/* Sequential Blink for Dots */
+@keyframes blinkSeq {
+0%, 100% { opacity: 0.2; transform: scale(0.8); }
+50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px #39FF14; }
+}
+.dot-seq {
+animation: blinkSeq 1.2s infinite;
+}
+.d1 { animation-delay: 0.0s; }
+.d2 { animation-delay: 0.2s; }
+.d3 { animation-delay: 0.4s; }
+.d4 { animation-delay: 0.6s; }
+.d5 { animation-delay: 0.8s; }
+.d6 { animation-delay: 1.0s; }
+/* Corner Brackets */
+.corner-bracket {
+position: absolute;
+width: 20px;
+height: 20px;
+border-color: #39FF14;
+border-style: solid;
+opacity: 0.7;
+pointer-events: none;
+transition: all 0.3s ease;
+}
+.group:hover .corner-bracket {
+width: 30px;
+height: 30px;
+opacity: 1;
+box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+.cb-tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.cb-tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.cb-bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.cb-br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+</style></head>
+<body class="antialiased overflow-x-hidden selection:bg-lime-500/30 selection:text-lime-200 text-neutral-300 bg-[#050505]">
+
+    <!-- Tech Grid Background -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 bg-[#050505] tech-grid"></div>
+
+    <!-- Page Scanning Line -->
+    <div class="page-scanline"></div>
+
+    <!-- Ambient Glows (Green) -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
+        <div class="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-lime-900/10 blur-[120px] rounded-full mix-blend-screen opacity-50"></div>
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-lime-900/5 blur-[100px] rounded-full mix-blend-screen"></div>
+    </div>
+
+    <!-- Grain Texture Overlay -->
+    <div class="grain-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed z-50 md:px-12 flex w-full pt-6 pr-6 pb-6 pl-6 top-0 items-center justify-between border-b border-white/5 backdrop-blur-md bg-[#050505]/70">
+        <!-- Left: Status -->
+        <div class="hidden md:flex flex-col items-start gap-1">
+            <div class="flex items-center gap-3">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-lime-400 shadow-[0_0_10px_#39FF14]"></span>
+                </span>
+                <span class="text-xs uppercase tracking-[0.2em] text-lime-400 font-mono font-bold">System Online</span>
+            </div>
+            <span class="text-[10px] text-neutral-500 font-mono pl-5 tracking-wide">UPTIME: 99.99%</span>
+        </div>
+
+        <!-- Center: Block Height -->
+        <div class="hidden md:flex flex-col items-center">
+            <span class="text-xs text-lime-200/80 font-mono tracking-widest border border-lime-900/30 bg-lime-900/10 px-3 py-1 rounded-sm" id="block-height">BLOCK: 1,204,550</span>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden text-white">
+            <span data-lucide="menu" class="w-6 h-6"></span>
+        </button>
+
+        <!-- Right: Wallet Connect -->
+        <a href="#" class="hidden md:flex items-center gap-2 px-5 py-2 rounded-full border border-neutral-700 bg-neutral-900/50 hover:bg-neutral-800 hover:border-lime-500/50 transition-all duration-300 group backdrop-blur-sm">
+            <span data-lucide="wallet" class="w-3 h-3 text-lime-400"></span>
+            <span class="text-xs uppercase tracking-widest font-medium text-white">Connect Wallet</span>
+            <span data-lucide="chevron-right" class="w-3 h-3 text-neutral-500 group-hover:text-lime-400 transition-colors"></span>
+        </a>
+    </nav>
+
+    <!-- Main Hero Section -->
+    <main class="min-h-screen flex flex-col w-full z-10 pt-28 pb-8 relative justify-between">
+        
+        <div class="container md:px-12 flex flex-col flex-grow h-full mr-auto ml-auto pr-6 pl-6 relative justify-between">
+            
+            <!-- Hero Top: Title & Visual -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mt-8 md:mt-16">
+                <!-- Title Area -->
+                <div class="md:col-span-8 relative z-20">
+                    <div class="flex flex-col select-none glitch-wrapper cursor-default">
+                        <h1 class="font-display text-[10vw] leading-[0.85] font-black tracking-tight text-white uppercase relative z-20 group">
+                            <span class="glitch-text block md:inline">DJED</span>
+                            <!-- Hollow OPS -->
+                            <span class="text-hollow md:ml-4 block md:inline glitch-text-hollow">OPS</span>
+                        </h1>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 mt-8 ml-2">
+                        <span class="text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase text-lime-400 border border-lime-500/30 px-3 py-1.5 rounded bg-lime-950/20 backdrop-blur-sm">Stability + Resilience</span>
+                        <div class="h-[1px] w-24 bg-gradient-to-r from-lime-900 to-transparent"></div>
+                    </div>
+                </div>
+
+                <!-- Right Side Visual: Reserve Sun Placeholder -->
+                <div class="md:col-span-4 h-[300px] md:h-[400px] relative flex items-center justify-center wireframe-container">
+                    <!-- Wireframe Sphere Graphic -->
+                     <div class="sphere-wrapper flex items-center justify-center">
+                        <div class="w-[280px] h-[280px] md:w-[340px] md:h-[340px] wireframe-sphere flex items-center justify-center">
+                            <div class="absolute inset-0 bg-lime-400/5 rounded-full blur-3xl"></div>
+                            <span class="font-mono text-[10px] text-lime-400 tracking-widest opacity-80 animate-pulse bg-black/50 px-2 py-1">RESERVE_SUN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Bottom: Data Display & Footer Trust -->
+            <div class="grid grid-cols-1 md:grid-cols-12 w-full pb-8 gap-x-8 gap-y-12 items-end mt-12 md:mt-0">
+                
+                <!-- Data Display (Bottom Left) -->
+                <div class="md:col-span-6 relative">
+                    <!-- Decorative Left Line -->
+                    <div class="absolute -left-6 top-0 bottom-0 w-[1px] bg-gradient-to-b from-lime-500/50 via-lime-900/20 to-transparent hidden md:block"></div>
+                    
+                    <div class="mb-6">
+                        <h2 class="text-2xl md:text-3xl font-display font-medium text-white tracking-tight mb-1 flex items-center gap-3">
+                            System Status: <span class="text-lime-400 text-glow">NORMAL</span>
+                        </h2>
+                        <p class="font-mono text-sm text-neutral-500 tracking-wide">
+                            Peg Variance: <span class="text-white">0.00%</span>
+                        </p>
+                    </div>
+
+                    <!-- Live Data Grid with HUD Brackets -->
+                    <div class="relative group p-2 mb-8">
+                        <!-- Corner Brackets -->
+                        <div class="corner-bracket cb-tl"></div>
+                        <div class="corner-bracket cb-tr"></div>
+                        <div class="corner-bracket cb-bl"></div>
+                        <div class="corner-bracket cb-br"></div>
+
+                        <div class="bg-[#0A0A0A] border border-white/5 rounded-sm p-1 grid grid-cols-1 gap-[1px] backdrop-blur-sm relative z-10">
+                            <!-- Row 1 -->
+                            <div class="bg-[#080808] p-4 flex justify-between items-center hover:bg-[#0c0c0c] transition-colors border-b border-white/5">
+                                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Reserve Ratio</span>
+                                <span class="font-mono text-lime-400 font-bold text-lg" id="reserve-ratio">0%</span>
+                            </div>
+                            <!-- Row 2 -->
+                            <div class="bg-[#080808] p-4 flex justify-between items-center hover:bg-[#0c0c0c] transition-colors border-b border-white/5">
+                                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Base Reserves</span>
+                                <span class="font-mono text-white">12.5M ERG</span>
+                            </div>
+                            <!-- Row 3 -->
+                            <div class="bg-[#080808] p-4 flex justify-between items-center hover:bg-[#0c0c0c] transition-colors">
+                                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Oracle Price</span>
+                                <span class="font-mono text-white">$1.45 USD</span>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="inline-flex justify-center items-center gap-2 px-8 py-3 bg-lime-500/10 border border-lime-500/50 text-lime-400 hover:bg-lime-400 hover:text-black rounded-sm text-xs font-mono font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(57,255,20,0.1)] hover:shadow-[0_0_20px_rgba(57,255,20,0.4)]">
+                            <span data-lucide="play" class="w-3 h-3"></span>
+                            Launch Simulation
+                        </button>
+                        <button class="inline-flex justify-center items-center gap-2 px-8 py-3 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600 rounded-sm text-xs font-mono font-bold uppercase tracking-widest transition-colors">
+                            <span data-lucide="file-code" class="w-3 h-3"></span>
+                            View Contract
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Spacer -->
+                <div class="hidden md:block md:col-span-2"></div>
+
+                <!-- Footer / Operational Nodes (Bottom Right) -->
+                <div class="md:col-span-4 flex flex-col justify-end">
+                    <div class="border-t border-neutral-800 pt-6">
+                         <div class="flex items-center gap-4 mb-3">
+                             <div class="flex gap-2">
+                                 <!-- Status Lights Sequential Blink -->
+                                 <div class="w-2 h-2 rounded-full bg-lime-500 dot-seq d1"></div>
+                                 <div class="w-2 h-2 rounded-full bg-lime-500 dot-seq d2"></div>
+                                 <div class="w-2 h-2 rounded-full bg-lime-500 dot-seq d3"></div>
+                                 <div class="w-2 h-2 rounded-full bg-lime-500 dot-seq d4"></div>
+                                 <div class="w-2 h-2 rounded-full bg-lime-500 dot-seq d5"></div>
+                                 <div class="w-2 h-2 rounded-full bg-lime-500 dot-seq d6"></div>
+                             </div>
+                             <span class="font-mono text-xs text-white">Active Oracles: 6/6</span>
+                         </div>
+                        <span class="text-[10px] text-neutral-600 font-mono uppercase tracking-[0.2em]">Operational Nodes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative UI Elements -->
+        <div class="absolute bottom-10 left-0 w-full px-6 md:px-12 flex justify-between pointer-events-none mix-blend-overlay">
+             <span class="font-mono text-[9px] text-neutral-600 tracking-[0.5em] uppercase">SYS.V.4.2</span>
+             <span class="font-mono text-[9px] text-neutral-600 tracking-[0.5em] uppercase">LATENCY: 12ms</span>
+        </div>
+    </main>
+
+    <!-- Section 2: System Logs -->
+    <section class="py-24 relative z-10 border-t border-white/5 bg-[#050505]">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="max-w-4xl mx-auto text-center">
+                <span class="text-xs font-mono text-lime-400 mb-6 block tracking-widest uppercase">System Diagnostics</span>
+                <h2 class="text-3xl md:text-5xl font-display font-semibold text-white tracking-tight mb-6">
+                    Autonomous Stability <br> <span class="text-neutral-600">In a Volatile Environment.</span>
+                </h2>
+                <h3 class="text-lg text-neutral-400 font-light mb-12 font-mono">Algorithmic adjustments executing every block.</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8 text-left mt-16 max-w-4xl mx-auto bg-neutral-900/20 p-1 rounded-sm border border-white/5 backdrop-blur-sm">
+                    <!-- Log Box 1 -->
+                    <div class="bg-[#080808] p-8 border border-white/5 hover:border-red-500/30 transition-colors group">
+                        <div class="flex items-center gap-3 mb-4 text-red-500/80">
+                            <span data-lucide="alert-triangle" class="w-5 h-5"></span>
+                            <span class="text-xs font-mono uppercase tracking-wider">Critical Threshold</span>
+                        </div>
+                        <p class="text-neutral-400 leading-relaxed text-sm font-mono">
+                            &gt; MONITORING RESERVE RATIO<br>
+                            &gt; IF RATIO &lt; 400% THEN<br>
+                            &gt; EXECUTE: BLOCK_MINTING<br>
+                            &gt; STATUS: <span class="text-red-500">INACTIVE</span>
+                        </p>
+                    </div>
+                    <!-- Log Box 2 -->
+                    <div class="bg-[#080808] p-8 border border-white/5 hover:border-lime-500/30 transition-colors group">
+                        <div class="flex items-center gap-3 mb-4 text-lime-400/80">
+                            <span data-lucide="shield-check" class="w-5 h-5"></span>
+                            <span class="text-xs font-mono uppercase tracking-wider">Stability Protocol</span>
+                        </div>
+                        <p class="text-neutral-400 leading-relaxed text-sm font-mono">
+                            &gt; PEGGED TOKEN MINTING<br>
+                            &gt; COLLATERAL CHECK: PASS<br>
+                            &gt; ORACLE FEED: SYNCED<br>
+                            &gt; STATUS: <span class="text-lime-400">OPERATIONAL</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Protocol Architecture -->
+    <section class="py-24 relative z-10 bg-neutral-900/5 border-t border-white/5">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="mb-16 md:mb-24 max-w-2xl">
+                <span class="text-xs font-mono text-lime-400 mb-4 block tracking-widest uppercase">Protocol Architecture</span>
+                <h2 class="text-3xl md:text-5xl font-display font-semibold tracking-tight text-white mb-4">Core Mechanism.</h2>
+                <p class="text-lg font-light text-neutral-500 font-mono">Formal verification meets economic game theory.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Module 1 -->
+                <div class="group relative p-8 rounded-sm border border-neutral-800 bg-[#080808] hover:border-lime-500/30 transition-all duration-500 overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-[2px] bg-lime-400/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 rounded-sm bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-6 text-lime-400 group-hover:text-white transition-colors">
+                        <span data-lucide="cpu" class="w-5 h-5"></span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-3 tracking-tight font-display">Smart Contract Core</h3>
+                    <p class="text-neutral-400 text-xs leading-relaxed font-mono">
+                        Verified Scala code running on UTXO model. Deterministic execution ensuring reserve integrity.
+                    </p>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="group relative p-8 rounded-sm border border-neutral-800 bg-[#080808] hover:border-lime-500/30 transition-all duration-500 overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-[2px] bg-lime-400/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 rounded-sm bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-6 text-lime-400 group-hover:text-white transition-colors">
+                        <span data-lucide="database" class="w-5 h-5"></span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-3 tracking-tight font-display">Oracle Aggregation</h3>
+                    <p class="text-neutral-400 text-xs leading-relaxed font-mono">
+                        Tier 2 Data Pools. Six independent nodes providing price feeds with medianizer logic to prevent manipulation.
+                    </p>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="group relative p-8 rounded-sm border border-neutral-800 bg-[#080808] hover:border-lime-500/30 transition-all duration-500 overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-[2px] bg-lime-400/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 rounded-sm bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-6 text-lime-400 group-hover:text-white transition-colors">
+                        <span data-lucide="lock" class="w-5 h-5"></span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-3 tracking-tight font-display">Liquidity Lock</h3>
+                    <p class="text-neutral-400 text-xs leading-relaxed font-mono">
+                        Reserve coins (Shen) absorb volatility. Base coins (Djed) maintain 1:1 peg through over-collateralization.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Live Feeds -->
+    <section class="bg-[#030303] z-10 pt-24 pb-24 relative border-t border-white/5">
+        <div class="container md:px-12 mr-auto ml-auto pr-6 pl-6">
+            <div class="mb-12 flex flex-col md:flex-row justify-between items-end">
+                <div>
+                    <span class="text-xs font-mono text-lime-400 mb-4 block tracking-widest uppercase">Live Feed</span>
+                    <h2 class="text-3xl md:text-4xl font-semibold tracking-tight text-white font-display">Transaction Log.</h2>
+                </div>
+                <div class="flex items-center gap-2 text-xs font-mono text-neutral-500 mt-4 md:mt-0">
+                    <span class="w-2 h-2 rounded-full bg-lime-500 animate-pulse"></span>
+                    SYNCING MEMPOOL
+                </div>
+            </div>
+
+            <!-- Terminal Style Feed -->
+            <div class="w-full bg-[#080808] border border-neutral-800 rounded-sm overflow-hidden font-mono text-xs md:text-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                <div class="bg-neutral-900/50 border-b border-neutral-800 p-3 flex gap-4 text-neutral-500 uppercase tracking-widest text-[10px]">
+                    <span class="w-24">Tx ID</span>
+                    <span class="w-24">Type</span>
+                    <span class="flex-grow">Details</span>
+                    <span class="w-24 text-right">Age</span>
+                </div>
+                
+                <!-- Row 1 -->
+                <div class="p-4 border-b border-white/5 flex flex-col md:flex-row gap-2 md:gap-4 hover:bg-lime-900/10 transition-colors cursor-pointer group">
+                    <span class="text-neutral-500 w-24">0x4a...9f</span>
+                    <span class="text-lime-400 w-24 group-hover:text-lime-300">MINT_DJED</span>
+                    <span class="text-neutral-300 flex-grow">Input: 1,500 ERG -&gt; Output: 2,175 DJED</span>
+                    <span class="text-neutral-500 w-24 text-right">12s ago</span>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="p-4 border-b border-white/5 flex flex-col md:flex-row gap-2 md:gap-4 hover:bg-lime-900/10 transition-colors cursor-pointer group">
+                    <span class="text-neutral-500 w-24">0x8b...2c</span>
+                    <span class="text-purple-400 w-24 group-hover:text-purple-300">MINT_SHEN</span>
+                    <span class="text-neutral-300 flex-grow">Input: 5,000 ERG -&gt; Output: 4,200 SHEN</span>
+                    <span class="text-neutral-500 w-24 text-right">45s ago</span>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="p-4 border-b border-white/5 flex flex-col md:flex-row gap-2 md:gap-4 hover:bg-lime-900/10 transition-colors cursor-pointer group">
+                    <span class="text-neutral-500 w-24">0x1c...aa</span>
+                    <span class="text-lime-400 w-24 group-hover:text-lime-300">REDEEM_DJED</span>
+                    <span class="text-neutral-300 flex-grow">Input: 500 DJED -&gt; Output: 344 ERG</span>
+                    <span class="text-neutral-500 w-24 text-right">1m 12s ago</span>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="p-4 flex flex-col md:flex-row gap-2 md:gap-4 hover:bg-lime-900/10 transition-colors cursor-pointer group">
+                    <span class="text-neutral-500 w-24">0x9d...ee</span>
+                    <span class="text-lime-400 w-24 group-hover:text-lime-300">MINT_DJED</span>
+                    <span class="text-neutral-300 flex-grow">Input: 10,000 ERG -&gt; Output: 14,500 DJED</span>
+                    <span class="text-neutral-500 w-24 text-right">2m 05s ago</span>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-neutral-900/30 border border-neutral-800 p-4 rounded-sm">
+                    <div class="text-[10px] text-neutral-500 uppercase font-mono mb-1">24h Volume</div>
+                    <div class="text-lg text-white font-mono">$1,240,000</div>
+                </div>
+                <div class="bg-neutral-900/30 border border-neutral-800 p-4 rounded-sm">
+                    <div class="text-[10px] text-neutral-500 uppercase font-mono mb-1">Fees Generated</div>
+                    <div class="text-lg text-lime-400 font-mono">4,200 ERG</div>
+                </div>
+                <div class="bg-neutral-900/30 border border-neutral-800 p-4 rounded-sm">
+                    <div class="text-[10px] text-neutral-500 uppercase font-mono mb-1">Total DJED</div>
+                    <div class="text-lg text-white font-mono">3.2M</div>
+                </div>
+                <div class="bg-neutral-900/30 border border-neutral-800 p-4 rounded-sm">
+                    <div class="text-[10px] text-neutral-500 uppercase font-mono mb-1">Total SHEN</div>
+                    <div class="text-lg text-purple-400 font-mono">18.5M</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Governance / Parameters -->
+    <section class="py-24 relative z-10 border-t border-white/5">
+        <div class="container md:px-12 mr-auto ml-auto pr-6 pl-6">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-mono text-lime-400 mb-4 block tracking-widest uppercase">Governance</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-4 font-display">Protocol Parameters.</h2>
+                <p class="text-neutral-400 font-light text-lg font-mono text-sm">Immutable rulesets governing the peg.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                
+                <!-- Param 1 -->
+                <div class="p-8 rounded-sm border border-neutral-800 bg-[#080808] hover:border-neutral-700 transition-colors relative">
+                    <div class="absolute top-0 right-0 p-4 text-neutral-700">
+                        <span data-lucide="settings" class="w-5 h-5"></span>
+                    </div>
+                    <h3 class="text-md font-bold font-mono text-white mb-2 uppercase">Minimal Reserve</h3>
+                    <p class="text-xs text-neutral-500 mb-6 font-mono">Lower bound for SHEN minting.</p>
+                    <div class="mb-8 font-mono text-3xl text-white">400%</div>
+                    
+                    <ul class="space-y-3 text-xs text-neutral-400 font-mono border-t border-neutral-800 pt-4">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-lime-500"></span> Prevents insolvency
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-lime-500"></span> Triggers mint block
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Param 2 (Active) -->
+                <div class="p-8 rounded-sm border border-lime-500/40 bg-[#080808] shadow-[0_0_30px_-10px_rgba(57,255,20,0.1)] relative">
+                     <div class="absolute top-0 right-0 p-4 text-lime-500 animate-spin-slow">
+                        <span data-lucide="crosshair" class="w-5 h-5"></span>
+                    </div>
+                    <div class="absolute top-0 left-0 w-full h-[1px] bg-lime-500/50"></div>
+                    <h3 class="text-md font-bold font-mono text-lime-400 mb-2 uppercase text-glow">Fee Structure</h3>
+                    <p class="text-xs text-neutral-400 mb-6 font-mono">Dynamic fee allocation model.</p>
+                    <div class="mb-8 font-mono text-3xl text-white">1.5%</div>
+                    
+                    <ul class="space-y-3 text-xs text-neutral-300 font-mono border-t border-lime-900/30 pt-4">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-lime-400"></span> 0.25% to Operators
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-lime-400"></span> 1.25% to Reserve Pool
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Param 3 -->
+                <div class="p-8 rounded-sm border border-neutral-800 bg-[#080808] hover:border-neutral-700 transition-colors relative">
+                    <div class="absolute top-0 right-0 p-4 text-neutral-700">
+                        <span data-lucide="bar-chart" class="w-5 h-5"></span>
+                    </div>
+                    <h3 class="text-md font-bold font-mono text-white mb-2 uppercase">Maximum Reserve</h3>
+                    <p class="text-xs text-neutral-500 mb-6 font-mono">Upper bound cap.</p>
+                    <div class="mb-8 font-mono text-3xl text-white">800%</div>
+                    
+                    <ul class="space-y-3 text-xs text-neutral-400 font-mono border-t border-neutral-800 pt-4">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-lime-500"></span> Caps reserve exposure
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-lime-500"></span> Maintains efficiency
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 pt-24 pb-12 bg-[#020202] border-t border-white/5">
+        <div class="container mx-auto px-6 md:px-12 text-center">
+            
+            <div class="inline-block mb-6 p-4 border border-lime-500/20 rounded-full bg-lime-950/10">
+                <span data-lucide="radio" class="w-8 h-8 text-lime-400 animate-pulse"></span>
+            </div>
+
+            <h2 class="md:text-5xl text-3xl font-bold font-display text-white tracking-tight mb-6">
+                Decentralization is Non-Negotiable.
+            </h2>
+            <p class="text-sm md:text-base text-neutral-500 font-mono mb-12">
+                DjedOps provides the interface. The blockchain provides the truth.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-24">
+                <a href="#" class="inline-flex justify-center items-center gap-2 px-10 py-4 bg-lime-500 text-black rounded-sm text-sm font-bold font-mono tracking-widest hover:bg-lime-400 transition-colors shadow-[0_0_20px_rgba(57,255,20,0.3)]">
+                    INITIATE PROTOCOL
+                </a>
+                <a href="#" class="inline-flex justify-center items-center gap-2 px-10 py-4 border border-neutral-700 text-white rounded-sm text-sm font-bold font-mono tracking-widest hover:bg-neutral-800 transition-colors">
+                    READ WHITE PAPER
+                </a>
+            </div>
+
+            <div class="border-t border-neutral-900 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-neutral-600 font-mono gap-4 uppercase tracking-widest">
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-lime-400 transition-colors">Nodes</a>
+                    <a href="#" class="hover:text-lime-400 transition-colors">Telemetry</a>
+                    <a href="#" class="hover:text-lime-400 transition-colors">Contracts</a>
+                    <a href="#" class="hover:text-lime-400 transition-colors">Github</a>
+                </div>
+                <div class="">
+                    © 2025 DJED OPS SYSTEM. OPEN SOURCE.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Real-time block height simulation
+        let currentBlock = 1204550;
+        const blockDisplay = document.getElementById('block-height');
+        
+        setInterval(() => {
+            currentBlock++;
+            blockDisplay.textContent = `BLOCK: ${currentBlock.toLocaleString()}`;
+            // Add a flash effect (green)
+            blockDisplay.classList.add('text-lime-50', 'bg-lime-900/40');
+            setTimeout(() => {
+                blockDisplay.classList.remove('text-lime-50', 'bg-lime-900/40');
+            }, 500);
+        }, 8000); // New block every 8 seconds
+
+        // Reserve Ratio Count-up Animation
+        const targetRatio = 405;
+        let currentRatio = 0;
+        const ratioDisplay = document.getElementById('reserve-ratio');
+        
+        const countUp = setInterval(() => {
+            currentRatio += 5;
+            if (currentRatio >= targetRatio) {
+                currentRatio = targetRatio;
+                clearInterval(countUp);
+            }
+            ratioDisplay.textContent = `${currentRatio}%`;
+        }, 20);
+
+        lucide.createIcons();
+    </script>
+
+</body></html>

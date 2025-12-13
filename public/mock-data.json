@@ -1,0 +1,96 @@
+{
+  "oraclePrice": 1.45,
+  "baseReserves": 150000000,
+  "sigUsdCirculation": 2500000,
+  "shenCirculation": 850000,
+  "transactions": [
+    {
+      "id": "tx_001",
+      "timestamp": "2024-12-07T14:30:15Z",
+      "type": "MINT_DJED",
+      "details": "Minted 5000 SigUSD",
+      "inputAmount": 3448.28,
+      "outputAmount": 5000,
+      "inputToken": "ERG",
+      "outputToken": "SigUSD"
+    },
+    {
+      "id": "tx_002",
+      "timestamp": "2024-12-07T14:28:42Z",
+      "type": "ORACLE_UPDATE",
+      "details": "Oracle price updated to $1.45"
+    },
+    {
+      "id": "tx_003",
+      "timestamp": "2024-12-07T14:25:18Z",
+      "type": "REDEEM_DJED",
+      "details": "Redeemed 2500 SigUSD",
+      "inputAmount": 2500,
+      "outputAmount": 1724.14,
+      "inputToken": "SigUSD",
+      "outputToken": "ERG"
+    },
+    {
+      "id": "tx_004",
+      "timestamp": "2024-12-07T14:22:05Z",
+      "type": "MINT_SHEN",
+      "details": "Minted 1000 SHEN",
+      "inputAmount": 1500,
+      "outputAmount": 1000,
+      "inputToken": "ERG",
+      "outputToken": "SHEN"
+    },
+    {
+      "id": "tx_005",
+      "timestamp": "2024-12-07T14:18:33Z",
+      "type": "MINT_DJED",
+      "details": "Minted 10000 SigUSD",
+      "inputAmount": 6896.55,
+      "outputAmount": 10000,
+      "inputToken": "ERG",
+      "outputToken": "SigUSD"
+    },
+    {
+      "id": "tx_006",
+      "timestamp": "2024-12-07T14:15:20Z",
+      "type": "ORACLE_UPDATE",
+      "details": "Oracle price updated to $1.44"
+    },
+    {
+      "id": "tx_007",
+      "timestamp": "2024-12-07T14:12:47Z",
+      "type": "REDEEM_SHEN",
+      "details": "Redeemed 500 SHEN",
+      "inputAmount": 500,
+      "outputAmount": 750,
+      "inputToken": "SHEN",
+      "outputToken": "ERG"
+    },
+    {
+      "id": "tx_008",
+      "timestamp": "2024-12-07T14:09:12Z",
+      "type": "MINT_DJED",
+      "details": "Minted 7500 SigUSD",
+      "inputAmount": 5172.41,
+      "outputAmount": 7500,
+      "inputToken": "ERG",
+      "outputToken": "SigUSD"
+    },
+    {
+      "id": "tx_009",
+      "timestamp": "2024-12-07T14:05:38Z",
+      "type": "MINT_SHEN",
+      "details": "Minted 2000 SHEN",
+      "inputAmount": 3000,
+      "outputAmount": 2000,
+      "inputToken": "ERG",
+      "outputToken": "SHEN"
+    },
+    {
+      "id": "tx_010",
+      "timestamp": "2024-12-07T14:02:15Z",
+      "type": "ORACLE_UPDATE",
+      "details": "Oracle price updated to $1.45"
+    }
+  ]
+}
