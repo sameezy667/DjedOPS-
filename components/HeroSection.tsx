@@ -61,7 +61,7 @@ export function HeroSection({
             <h1 className="font-display font-black text-left mb-3 md:mb-4 title-flicker" style={{ fontSize: 'clamp(2.5rem, 12vw, 8rem)', lineHeight: '0.85', letterSpacing: '-0.05em', filter: 'drop-shadow(0 0 25px rgba(57, 255, 20, 0.3))' }}>
               <span className="text-white">DJED</span>
               <br />
-              <span className="text-bloom-green" style={{ WebkitTextStroke: '1.5px #39FF14', WebkitTextFillColor: 'transparent', textStroke: '1.5px #39FF14', textFillColor: 'transparent' }}>OPS</span>
+              <span className="text-bloom-green" style={{ WebkitTextStroke: '1.5px #39FF14', WebkitTextFillColor: 'transparent' }}>OPS</span>
             </h1>
             
             {/* Tagline */}
