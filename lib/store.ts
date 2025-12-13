@@ -26,6 +26,11 @@ export interface AppState {
   // Performance state
   highPerformanceMode: boolean;
   
+  // Replay/Time Travel state
+  isReplayMode: boolean;
+  replayScenario: 'crash' | 'bull_run' | null;
+  replayTime: number; // 0-100 slider value representing timeline
+  
   // Actions
   setDjedData: (data: DjedData) => void;
   setDemoMode: (enabled: boolean) => void;
@@ -40,6 +45,9 @@ export interface AppState {
   toggleSimulationModal: () => void;
   toggleSentinelPanel: () => void;
   setHighPerformanceMode: (enabled: boolean) => void;
+  setReplayMode: (enabled: boolean) => void;
+  setReplayScenario: (scenario: 'crash' | 'bull_run' | null) => void;
+  setReplayTime: (time: number) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -68,6 +76,9 @@ export const useAppStore = create<AppState>((set) => ({
   highPerformanceMode: typeof window !== 'undefined' 
     ? localStorage.getItem('perfMode') === 'true' 
     : false,
+  isReplayMode: false,
+  replayScenario: null,
+  replayTime: 0,
   
   // Actions
   setDjedData: (data) => set({ djedData: data }),
@@ -116,4 +127,18 @@ export const useAppStore = create<AppState>((set) => ({
     }
     set({ highPerformanceMode: enabled });
   },
+  
+  setReplayMode: (enabled) => set({ 
+    isReplayMode: enabled,
+    // Reset scenario when disabling replay mode
+    replayScenario: enabled ? null : null,
+    replayTime: enabled ? 0 : 0
+  }),
+  
+  setReplayScenario: (scenario) => set({ 
+    replayScenario: scenario,
+    isReplayMode: scenario !== null 
+  }),
+  
+  setReplayTime: (time) => set({ replayTime: time }),
 }));
