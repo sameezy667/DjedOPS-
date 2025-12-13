@@ -73,7 +73,7 @@ export function DataGrid({ reserveRatio, baseReserves, oraclePrice, onInspectPro
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 w-full">
       {/* Reserve Ratio Metric */}
       <MetricCard
         label="RESERVE RATIO"
@@ -110,7 +110,7 @@ function MetricCard({ label, value, onInspect, hasInspector }: MetricCardProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative bg-transparent border border-[#39FF14]/30 hover:border-[#39FF14]/60 p-6 min-h-[100px] transition-all duration-300 group"
+      className="relative bg-transparent border border-[#39FF14]/30 hover:border-[#39FF14]/60 p-3 sm:p-6 min-h-[80px] sm:min-h-[100px] transition-all duration-300 group"
       role="article"
       aria-label={`${label}: ${value}`}
     >
@@ -124,11 +124,11 @@ function MetricCard({ label, value, onInspect, hasInspector }: MetricCardProps) 
       {hasInspector && onInspect && (
         <button
           onClick={onInspect}
-          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/60 rounded transition-all group/btn"
+          className="absolute top-1 right-1 sm:top-2 sm:right-2 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/60 rounded transition-all group/btn"
           title="Inspect Protocol Logic"
         >
           <svg 
-            className="w-3 h-3 text-cyan-400 group-hover/btn:text-cyan-300" 
+            className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-cyan-400 group-hover/btn:text-cyan-300" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -145,10 +145,10 @@ function MetricCard({ label, value, onInspect, hasInspector }: MetricCardProps) 
 
       {/* Content */}
       <div className="flex flex-col justify-between h-full">
-        <div className="text-neutral-500 text-[10px] font-mono tracking-widest uppercase mb-3">
+        <div className="text-neutral-500 text-[9px] sm:text-[10px] font-mono tracking-widest uppercase mb-1 sm:mb-3">
           {label}
         </div>
-        <div className="text-[#39FF14] text-2xl sm:text-3xl lg:text-4xl font-mono font-bold break-all group-hover:text-bloom-green transition-all">
+        <div className="text-[#39FF14] text-base sm:text-2xl lg:text-4xl font-mono font-bold break-all group-hover:text-bloom-green transition-all">
           {value}
         </div>
       </div>
