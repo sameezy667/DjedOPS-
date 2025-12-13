@@ -9,38 +9,21 @@ export default function StressTest() {
   const [sliderPercent, setSliderPercent] = useState(0);
   const [projectedRatio, setProjectedRatio] = useState<number | null>(null);
 
-  const reserve = data?.baseReserves;
-  const price = data?.oraclePrice;
-  const supply = data?.sigUsdCirculation;
-  const currentRatio = data?.reserveRatio;
-
-  // Fallback values for demo purposes
-  const FALLBACK_RESERVE = 3500000;
-  const FALLBACK_PRICE = 0.48;
-  const FALLBACK_SUPPLY = 750000;
-  const FALLBACK_RATIO = 224.0;
-
+  // Hardcoded demo data
+  const BASE_PRICE = 0.48;
+  const BASE_RATIO = 224.0;
+  
   useEffect(() => {
-    if (reserve && price && supply) {
-      // Calculate projected ratio based on hypothetical ERG price change
-      const hypotheticalPrice = price * (1 + sliderPercent / 100);
-      const calculatedRatio = ((reserve * hypotheticalPrice) / supply) * 100;
-      setProjectedRatio(calculatedRatio);
-    } else {
-      // Use fallback calculation with realistic demo data
-      const basePrice = price || FALLBACK_PRICE;
-      const baseReserve = reserve || FALLBACK_RESERVE;
-      const baseSupply = supply || FALLBACK_SUPPLY;
-      const hypotheticalPrice = basePrice * (1 + sliderPercent / 100);
-      const calculatedRatio = ((baseReserve * hypotheticalPrice) / baseSupply) * 100;
-      setProjectedRatio(calculatedRatio);
-    }
-  }, [reserve, price, supply, sliderPercent, currentRatio]);
+    // Simple hardcoded calculation based on slider
+    const baseRatio = BASE_RATIO;
+    const calculatedRatio = baseRatio * (1 + sliderPercent / 100);
+    setProjectedRatio(calculatedRatio);
+  }, [sliderPercent]);
 
-  const displayPrice = price || FALLBACK_PRICE;
-  const displayRatio = currentRatio !== undefined ? currentRatio : FALLBACK_RATIO;
+  const displayPrice = BASE_PRICE;
+  const displayRatio = BASE_RATIO;
   const isLiquidationRisk = projectedRatio !== null && projectedRatio < 400;
-  const hypotheticalPrice = (displayPrice * (1 + sliderPercent / 100)).toFixed(2);
+  const hypotheticalPrice = (BASE_PRICE * (1 + sliderPercent / 100)).toFixed(2);
 
   const getRatioChangeIcon = () => {
     if (!projectedRatio) return '—';
