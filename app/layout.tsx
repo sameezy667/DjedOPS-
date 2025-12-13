@@ -48,10 +48,6 @@ export const metadata: Metadata = {
     maximumScale: 1,
   },
   themeColor: "#000000",
-  icons: {
-    icon: "/Gemini_Generated_Image_fan86gfan86gfan8.png",
-    apple: "/Gemini_Generated_Image_fan86gfan86gfan8.png",
-  },
   openGraph: {
     title: "DjedOps | Real-time Ergo Stability Monitor",
     description: "Monitor Djed Stablecoin health, track whales, and find arbitrage opportunities on the Ergo blockchain.",
