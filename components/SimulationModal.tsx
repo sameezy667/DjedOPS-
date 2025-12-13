@@ -36,32 +36,43 @@ export function SimulationModal({
   onScenarioActivate,
 }: SimulationModalProps) {
   const simulationScenario = useAppStore((state) => state.simulationScenario);
-  const [sliderValue, setSliderValue] = useState(currentPrice);
+  
+  // Force defaults to prevent 0 division or invalid calculations
+  const safeCurrentPrice = currentPrice > 0 ? currentPrice : 1.00;
+  const safeCurrentRatio = currentReserveRatio > 0 ? currentReserveRatio : 400;
+  
+  // State for simulation
+  const [sliderValue, setSliderValue] = useState(safeCurrentPrice);
+  const [simulatedRatio, setSimulatedRatio] = useState(safeCurrentRatio);
   const [frozenPrice, setFrozenPrice] = useState<number | null>(null);
   
-  // Calculate ratio using RELATIVE method - works even if base data is missing
-  // Formula: NewRatio = CurrentRatio * (NewPrice / CurrentPrice)
-  const simulatedRatio = (currentPrice > 0 && currentReserveRatio > 0)
-    ? currentReserveRatio * (sliderValue / currentPrice)
-    : 0;
   const simulatedStatus = determineSystemStatus(simulatedRatio);
   
-  console.log('⚡ SimulationModal:', { 
-    currentPrice, 
-    currentReserveRatio,
-    sliderValue,
-    priceMultiplier: sliderValue / currentPrice,
-    simulatedRatio,
-    simulatedStatus,
-    formula: `${currentReserveRatio} * (${sliderValue} / ${currentPrice}) = ${simulatedRatio}`
-  });
+  // Recalculate ratio whenever slider value changes
+  useEffect(() => {
+    // Formula: NewRatio = CurrentRatio * (NewPrice / OldPrice)
+    const ratio = safeCurrentRatio * (sliderValue / safeCurrentPrice);
+    setSimulatedRatio(ratio);
+    console.log('🔄 Ratio Recalculated:', {
+      sliderValue,
+      safeCurrentPrice,
+      safeCurrentRatio,
+      ratio,
+      formula: `${safeCurrentRatio} * (${sliderValue} / ${safeCurrentPrice}) = ${ratio}`
+    });
+  }, [sliderValue, safeCurrentPrice, safeCurrentRatio]);
 
-  // Reset slider to current price when modal opens
+  // Reset when modal opens
   useEffect(() => {
     if (isOpen) {
-      setSliderValue(currentPrice);
+      setSliderValue(safeCurrentPrice);
+      setSimulatedRatio(safeCurrentRatio);
+      console.log('🚀 Modal Opened - Reset:', { 
+        safeCurrentPrice, 
+        safeCurrentRatio 
+      });
     }
-  }, [isOpen, currentPrice]);
+  }, [isOpen, safeCurrentPrice, safeCurrentRatio]);
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -78,18 +89,10 @@ export function SimulationModal({
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPrice = parseFloat(e.target.value);
     setSliderValue(newPrice);
-    
-    // Calculate using relative method
-    const newRatio = currentPrice > 0 ? currentReserveRatio * (newPrice / currentPrice) : 0;
+    // Ratio will be recalculated by useEffect
+    // Notify parent with the new calculated ratio
+    const newRatio = safeCurrentRatio * (newPrice / safeCurrentPrice);
     const newStatus = determineSystemStatus(newRatio);
-    
-    console.log('🔍 Slider Change:', {
-      newPrice,
-      newRatio,
-      newStatus,
-      formula: `${currentReserveRatio} * (${newPrice} / ${currentPrice})`
-    });
-    
     onSimulatedPriceChange(newPrice, newRatio, newStatus);
   };
 
@@ -98,23 +101,25 @@ export function SimulationModal({
     
     if (scenario === 'flash_crash') {
       // Instant 50% price drop
-      const crashPrice = currentPrice * 0.5;
+      const crashPrice = safeCurrentPrice * 0.5;
       setSliderValue(crashPrice);
-      const newRatio = currentReserveRatio * 0.5; // 50% price drop = 50% ratio drop
-      const newStatus = determineSystemStatus(newRatio);
-      onSimulatedPriceChange(crashPrice, newRatio, newStatus);
+      const newRatio = safeCurrentRatio * 0.5; // 50% price drop = 50% ratio drop
+      setSimulatedRatio(newRatio);
+      onSimulatedPriceChange(crashPrice, newRatio, determineSystemStatus(newRatio));
     } else if (scenario === 'oracle_freeze') {
       // Lock price at current value
       setFrozenPrice(sliderValue);
     } else if (scenario === 'bank_run') {
       // Force ratio below 400%
       const forcedRatio = 399;
+      setSimulatedRatio(forcedRatio);
       onSimulatedPriceChange(sliderValue, forcedRatio, 'CRITICAL');
     } else if (scenario === 'none') {
       // Reset to live state
       setFrozenPrice(null);
-      setSliderValue(currentPrice);
-      onSimulatedPriceChange(currentPrice, currentReserveRatio, determineSystemStatus(currentReserveRatio));
+      setSliderValue(safeCurrentPrice);
+      setSimulatedRatio(safeCurrentRatio);
+      onSimulatedPriceChange(safeCurrentPrice, safeCurrentRatio, determineSystemStatus(safeCurrentRatio));
     }
   };
 
@@ -217,6 +222,11 @@ export function SimulationModal({
                 simulatedStatus === 'CRITICAL' ? 'text-alert' : 'text-terminal'
               }`}>
                 {simulatedRatio.toFixed(2)}%
+              </p>
+              
+              {/* Debug info */}
+              <p className="text-xs text-gray-500 mt-2 font-mono">
+                Price ${sliderValue.toFixed(2)} / Base ${safeCurrentPrice.toFixed(2)} × Ratio {safeCurrentRatio.toFixed(2)}%
               </p>
               
               {/* Red alert indicator when ratio < 400% */}
