@@ -59,9 +59,9 @@ export function TimeTravel() {
   };
 
   const handleLoadScenario = (scenario: 'crash' | 'bull_run') => {
+    setReplayMode(true); // Activate replay mode first
     setReplayScenario(scenario);
-    setReplayMode(true);
-    setReplayTime(50); // Start at midpoint
+    setReplayTime(100); // Start at full scenario (NOW)
   };
 
   const currentScenario = replayScenario ? REPLAY_SCENARIOS[replayScenario] : null;
@@ -150,64 +150,62 @@ export function TimeTravel() {
                 )}
               </div>
 
-              {/* Scenario Buttons */}
-              {isReplayMode && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-4"
-                >
-                  <div className="text-sm font-mono text-textSecondary mb-2">
-                    LOAD SCENARIO:
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* Crash Scenario */}
-                    <button
-                      onClick={() => handleLoadScenario('crash')}
-                      className={`p-4 border-2 transition-all text-left ${
-                        replayScenario === 'crash'
-                          ? 'border-red-500 bg-red-500 bg-opacity-10'
-                          : 'border-gray-700 hover:border-red-500'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xl">📉</span>
-                        <span className="font-display font-bold text-red-500 uppercase">
-                          Market Crash
-                        </span>
-                      </div>
-                      <div className="text-xs font-mono text-textSecondary space-y-1">
-                        <div>ERG: $0.50 (Critical Drop)</div>
-                        <div>DSI: 150% (Below Threshold)</div>
-                        <div className="text-red-500">⚠ System in Critical State</div>
-                      </div>
-                    </button>
+              {/* Scenario Buttons - Always visible */}
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4"
+              >
+                <div className="text-sm font-mono text-textSecondary mb-2">
+                  LOAD SCENARIO:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Crash Scenario */}
+                  <button
+                    onClick={() => handleLoadScenario('crash')}
+                    className={`p-4 border-2 transition-all text-left ${
+                      isReplayMode && replayScenario === 'crash'
+                        ? 'border-red-500 bg-red-500 bg-opacity-10'
+                        : 'border-gray-700 hover:border-red-500'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">📉</span>
+                      <span className="font-display font-bold text-red-500 uppercase">
+                        Market Crash
+                      </span>
+                    </div>
+                    <div className="text-xs font-mono text-textSecondary space-y-1">
+                      <div>ERG: $0.50 (Critical Drop)</div>
+                      <div>DSI: 150% (Below Threshold)</div>
+                      <div className="text-red-500">⚠ System in Critical State</div>
+                    </div>
+                  </button>
 
-                    {/* Bull Run Scenario */}
-                    <button
-                      onClick={() => handleLoadScenario('bull_run')}
-                      className={`p-4 border-2 transition-all text-left ${
-                        replayScenario === 'bull_run'
-                          ? 'border-green-500 bg-green-500 bg-opacity-10'
-                          : 'border-gray-700 hover:border-green-500'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xl">📈</span>
-                        <span className="font-display font-bold text-green-500 uppercase">
-                          Bull Run
-                        </span>
-                      </div>
-                      <div className="text-xs font-mono text-textSecondary space-y-1">
-                        <div>ERG: $5.00 (Strong Growth)</div>
-                        <div>DSI: 1200% (Excellent Health)</div>
-                        <div className="text-green-500">✓ System Stable</div>
-                      </div>
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                  {/* Bull Run Scenario */}
+                  <button
+                    onClick={() => handleLoadScenario('bull_run')}
+                    className={`p-4 border-2 transition-all text-left ${
+                      isReplayMode && replayScenario === 'bull_run'
+                        ? 'border-green-500 bg-green-500 bg-opacity-10'
+                        : 'border-gray-700 hover:border-green-500'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">📈</span>
+                      <span className="font-display font-bold text-green-500 uppercase">
+                        Bull Run
+                      </span>
+                    </div>
+                    <div className="text-xs font-mono text-textSecondary space-y-1">
+                      <div>ERG: $5.00 (Strong Growth)</div>
+                      <div>DSI: 1200% (Excellent Health)</div>
+                      <div className="text-green-500">✓ System Stable</div>
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
 
               {/* Timeline Slider */}
               {isReplayMode && currentScenario && (
