@@ -513,9 +513,9 @@ export default function Home() {
         <SimulationModal
           isOpen={isSimulationModalOpen}
           onClose={handleCloseSimulation}
-          currentPrice={djedData.oraclePrice}
-          baseReserves={djedData.baseReserves}
-          sigUsdCirculation={djedData.sigUsdCirculation}
+          currentPrice={djedData?.oraclePrice ?? 0}
+          baseReserves={djedData?.baseReserves ?? 0}
+          sigUsdCirculation={djedData?.sigUsdCirculation ?? 0}
           onSimulatedPriceChange={handleSimulatedPriceChange}
           onScenarioActivate={handleScenarioActivate}
         />
