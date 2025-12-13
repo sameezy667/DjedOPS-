@@ -94,7 +94,6 @@ export function HeroSection({
             <ReserveSunWithVisibility
               reserveRatio={reserveRatio}
               systemStatus={systemStatus}
-              isSimulated={isSimulated}
             />
           </div>
         </div>

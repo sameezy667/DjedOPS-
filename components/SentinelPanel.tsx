@@ -27,12 +27,7 @@ export function SentinelToggle() {
   const dexPriceData = useDexPrice(protocolPrice);
   const dexPrice = dexPriceData.dexPrice;
 
-  // Check notification permission on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      setNotificationPermission(Notification.permission);
-    }
-  }, []);
+  // Notification permission is checked when needed during monitoring
 
   // Request notification permission
   const requestNotificationPermission = async () => {
