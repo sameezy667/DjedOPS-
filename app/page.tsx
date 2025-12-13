@@ -480,7 +480,7 @@ export default function Home() {
             <h2 className="text-3xl font-display font-bold text-[#E5E5E5] mb-6 uppercase tracking-tight">
               Arbitrage Monitor
             </h2>
-            <MarketOpportunityCard protocolPrice={djedData.oraclePrice} />
+            <MarketOpportunityCard />
           </div>
 
           {/* Peg Resilience Simulator */}

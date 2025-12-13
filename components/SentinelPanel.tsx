@@ -23,7 +23,6 @@ export function SentinelToggle() {
 
   // Always call hooks unconditionally - this is required by React Rules of Hooks
   const { data: djedData } = useDjedData();
-  const protocolPrice = djedData?.oraclePrice || 0;
   const dexPriceData = useDexPrice();
   const dexPrice = dexPriceData.dexPrice;
 

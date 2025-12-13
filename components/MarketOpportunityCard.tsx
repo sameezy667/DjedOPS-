@@ -5,7 +5,7 @@ import { useDexPrice } from '@/lib/hooks/useDexPrice';
 import { Zap, ExternalLink } from 'lucide-react';
 
 export interface MarketOpportunityCardProps {
-  protocolPrice: number;
+  // No props needed - protocol price is hardcoded
 }
 
 /**
@@ -38,7 +38,7 @@ function generateSpectrumUrl(signal: string): string | null {
  * 
  * Now includes one-click trade execution via Spectrum Finance.
  */
-export function MarketOpportunityCard({ protocolPrice }: MarketOpportunityCardProps) {
+export function MarketOpportunityCard({}: MarketOpportunityCardProps) {
   const { dexPrice, spread, spreadPercent, signal, isLoading, liquidity, source } = useDexPrice();
 
   // Signal styling
@@ -91,7 +91,7 @@ export function MarketOpportunityCard({ protocolPrice }: MarketOpportunityCardPr
         <div>
           <p className="text-[#A3A3A3] text-xs font-mono uppercase tracking-widest mb-2">PROTOCOL</p>
           <p className="text-[#E5E5E5] text-2xl sm:text-3xl font-mono font-semibold">
-            $1.0000
+            $0.8800
           </p>
         </div>
       </div>

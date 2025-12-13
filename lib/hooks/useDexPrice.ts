@@ -77,8 +77,8 @@ export function useDexPrice() {
   }
 
   // Calculate arbitrage metrics with safety guards
-  // DJED is a stablecoin pegged to $1.00
-  const realProtocolPrice = 1.00;
+  // Protocol price set to $0.88
+  const realProtocolPrice = 0.88;
   const spread = effectiveDexPrice - realProtocolPrice;
   
   // Safety: Guard against division by zero
