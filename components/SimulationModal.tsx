@@ -41,11 +41,25 @@ export function SimulationModal({
   const [sliderValue, setSliderValue] = useState(currentPrice);
   const [frozenPrice, setFrozenPrice] = useState<number | null>(null);
   
+  // Log props IMMEDIATELY
+  console.log('⚡ SimulationModal Props:', { 
+    currentPrice, 
+    baseReserves, 
+    sigUsdCirculation,
+    sliderValue 
+  });
+  
   // Calculate ratio directly from current slider value - no state needed
   const simulatedRatio = sigUsdCirculation > 0 
     ? calculateReserveRatio(baseReserves, sliderValue, sigUsdCirculation)
     : 0;
   const simulatedStatus = determineSystemStatus(simulatedRatio);
+  
+  console.log('⚡ Calculated Ratio:', { 
+    simulatedRatio, 
+    simulatedStatus,
+    formula: `(${baseReserves} * ${sliderValue}) / ${sigUsdCirculation} * 100 = ${simulatedRatio}`
+  });
 
   // Reset slider to current price when modal opens
   useEffect(() => {
