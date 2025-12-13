@@ -75,14 +75,14 @@ export function SimulationModal({
     
     // Recalculate ratio with new price
     if (sigUsdCirculation > 0) {
-      const newRatio = (baseReserves * newPrice) / (sigUsdCirculation * 100);
+      const newRatio = (baseReserves * newPrice) / sigUsdCirculation * 100;
       const newStatus = determineSystemStatus(newRatio);
       
       console.log('🔍 Simulation Math Check:', {
         baseReserves,
         price: newPrice,
         sigUsdSupply: sigUsdCirculation,
-        formula: `(${baseReserves} * ${newPrice}) / (${sigUsdCirculation} * 100)`,
+        formula: `(${baseReserves} * ${newPrice}) / ${sigUsdCirculation} * 100`,
         calculatedRatio: newRatio,
         status: newStatus
       });
@@ -101,7 +101,7 @@ export function SimulationModal({
       const crashPrice = currentPrice * 0.5;
       setSliderValue(crashPrice);
       if (sigUsdCirculation > 0) {
-        const newRatio = (baseReserves * crashPrice) / (sigUsdCirculation * 100);
+        const newRatio = (baseReserves * crashPrice) / sigUsdCirculation * 100;
         const newStatus = determineSystemStatus(newRatio);
         setSimulatedRatio(newRatio);
         setSimulatedStatus(newStatus);
