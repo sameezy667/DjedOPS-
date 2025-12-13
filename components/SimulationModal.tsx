@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { calculateReserveRatio, determineSystemStatus } from '@/lib/calculations';
+import { determineSystemStatus } from '@/lib/calculations';
 import { useAppStore } from '@/lib/store';
 import { ScenarioControls } from './ScenarioControls';
 import type { SimulationScenario } from '@/lib/types';
@@ -11,8 +11,7 @@ export interface SimulationModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentPrice: number;
-  baseReserves: number;
-  sigUsdCirculation: number;
+  currentReserveRatio: number;
   onSimulatedPriceChange: (price: number, ratio: number, status: 'NORMAL' | 'CRITICAL') => void;
   onScenarioActivate: (scenario: SimulationScenario) => void;
 }
@@ -32,8 +31,7 @@ export function SimulationModal({
   isOpen,
   onClose,
   currentPrice,
-  baseReserves,
-  sigUsdCirculation,
+  currentReserveRatio,
   onSimulatedPriceChange,
   onScenarioActivate,
 }: SimulationModalProps) {
@@ -41,24 +39,21 @@ export function SimulationModal({
   const [sliderValue, setSliderValue] = useState(currentPrice);
   const [frozenPrice, setFrozenPrice] = useState<number | null>(null);
   
-  // Log props IMMEDIATELY
-  console.log('⚡ SimulationModal Props:', { 
-    currentPrice, 
-    baseReserves, 
-    sigUsdCirculation,
-    sliderValue 
-  });
-  
-  // Calculate ratio directly from current slider value - no state needed
-  const simulatedRatio = sigUsdCirculation > 0 
-    ? calculateReserveRatio(baseReserves, sliderValue, sigUsdCirculation)
+  // Calculate ratio using RELATIVE method - works even if base data is missing
+  // Formula: NewRatio = CurrentRatio * (NewPrice / CurrentPrice)
+  const simulatedRatio = (currentPrice > 0 && currentReserveRatio > 0)
+    ? currentReserveRatio * (sliderValue / currentPrice)
     : 0;
   const simulatedStatus = determineSystemStatus(simulatedRatio);
   
-  console.log('⚡ Calculated Ratio:', { 
-    simulatedRatio, 
+  console.log('⚡ SimulationModal:', { 
+    currentPrice, 
+    currentReserveRatio,
+    sliderValue,
+    priceMultiplier: sliderValue / currentPrice,
+    simulatedRatio,
     simulatedStatus,
-    formula: `(${baseReserves} * ${sliderValue}) / ${sigUsdCirculation} * 100 = ${simulatedRatio}`
+    formula: `${currentReserveRatio} * (${sliderValue} / ${currentPrice}) = ${simulatedRatio}`
   });
 
   // Reset slider to current price when modal opens
@@ -91,16 +86,15 @@ export function SimulationModal({
     const newPrice = parseFloat(e.target.value);
     setSliderValue(newPrice);
     
-    // Ratio is automatically calculated from sliderValue in the component
-    // Just notify parent of the change
-    const newRatio = (baseReserves * newPrice) / sigUsdCirculation * 100;
+    // Calculate using relative method
+    const newRatio = currentPrice > 0 ? currentReserveRatio * (newPrice / currentPrice) : 0;
     const newStatus = determineSystemStatus(newRatio);
     
     console.log('🔍 Slider Change:', {
       newPrice,
       newRatio,
       newStatus,
-      formula: `(${baseReserves} * ${newPrice}) / ${sigUsdCirculation} * 100`
+      formula: `${currentReserveRatio} * (${newPrice} / ${currentPrice})`
     });
     
     onSimulatedPriceChange(newPrice, newRatio, newStatus);
@@ -113,7 +107,7 @@ export function SimulationModal({
       // Instant 50% price drop
       const crashPrice = currentPrice * 0.5;
       setSliderValue(crashPrice);
-      const newRatio = (baseReserves * crashPrice) / sigUsdCirculation * 100;
+      const newRatio = currentReserveRatio * 0.5; // 50% price drop = 50% ratio drop
       const newStatus = determineSystemStatus(newRatio);
       onSimulatedPriceChange(crashPrice, newRatio, newStatus);
     } else if (scenario === 'oracle_freeze') {
@@ -127,9 +121,7 @@ export function SimulationModal({
       // Reset to live state
       setFrozenPrice(null);
       setSliderValue(currentPrice);
-      const ratio = calculateReserveRatio(baseReserves, currentPrice, sigUsdCirculation);
-      const status = determineSystemStatus(ratio);
-      onSimulatedPriceChange(currentPrice, ratio, status);
+      onSimulatedPriceChange(currentPrice, currentReserveRatio, determineSystemStatus(currentReserveRatio));
     }
   };
 

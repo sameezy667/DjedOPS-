@@ -521,8 +521,7 @@ export default function Home() {
             isOpen={isSimulationModalOpen}
             onClose={handleCloseSimulation}
             currentPrice={djedData.oraclePrice}
-            baseReserves={djedData.baseReserves}
-            sigUsdCirculation={djedData.sigUsdCirculation}
+            currentReserveRatio={djedData.reserveRatio}
             onSimulatedPriceChange={handleSimulatedPriceChange}
             onScenarioActivate={handleScenarioActivate}
           />
